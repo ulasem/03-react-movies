@@ -13,6 +13,7 @@ export async function fetchMovies(query: string): Promise<Movie[]> {
   const config = {
     params: { query },
     headers: {
+      accept: 'application/json',
       Authorization: `Bearer ${token}`,
     },
   };
