@@ -1,48 +1,43 @@
+import css from './SearchBar.module.css';
 import toast from 'react-hot-toast';
-import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
-  onSubmit: (value: string) => void;
+  onSubmit: (query: string) => void;
 }
 
-async function submitAction(formData: FormData, onSubmit: (value: string) => void) {
-  const value = (formData.get("query") as string)?.trim();
+function SearchBar({ onSubmit }: SearchBarProps) {
+  const handlerSubmit = (formData: FormData) => {
+    const query = (formData.get('query') as string).trim();
 
-  if (!value) {
-    toast.error('Please enter your search query.');
-    return;
-  }
+    if (query === '') {
+      toast.error('Please enter your search query');
+      return;
+    }
 
-  onSubmit(value);
-}
-
-export default function SearchBar({ onSubmit }: SearchBarProps) {
+    onSubmit(query);
+  };
 
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
+    <header className={css.header}>
+      <div className={css.container}>
         <a
-          className={styles.link}
+          className={css.link}
           href="https://www.themoviedb.org/"
           target="_blank"
           rel="noopener noreferrer"
         >
           Powered by TMDB
         </a>
-
-        <form
-          className={styles.form}
-          action={(formData: FormData) => submitAction(formData, onSubmit)}
-        >
+        <form action={handlerSubmit} className={css.form}>
           <input
-            className={styles.input}
+            className={css.input}
+            type="text"
             name="query"
-            placeholder="Search movies..."
             autoComplete="off"
+            placeholder="Search movies..."
             autoFocus
           />
-
-          <button className={styles.button} type="submit">
+          <button className={css.button} type="submit">
             Search
           </button>
         </form>
@@ -50,3 +45,5 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
     </header>
   );
 }
+
+export default SearchBar;

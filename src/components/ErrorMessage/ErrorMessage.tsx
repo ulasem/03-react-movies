@@ -1,5 +1,7 @@
-import styles from './ErrorMessage.module.css';
+import css from './ErrorMessage.module.css';
 
-export default function ErrorMessage() {
-  return <p className={styles.text}>There was an error, please try again...</p>;
+function ErrorMessage() {
+  return <p className={css.text}>There was an error, please try again...</p>;
 }
+
+export default ErrorMessage;

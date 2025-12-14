@@ -1,50 +1,50 @@
+import './App.module.css';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import type { Movie } from '../../types/movie';
 import SearchBar from '../SearchBar/SearchBar';
 import MovieGrid from '../MovieGrid/MovieGrid';
+import fetchMovies from '../../services/movieService';
 import Loader from '../Loader/Loader';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import MovieModal from '../MovieModal/MovieModal';
-import { fetchMovies } from '../../services/movieService';
-import type { Movie } from '../../types/movie';
-import './App.module.css';
 
-export default function App() {
+function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [isError, setError] = useState(false);
 
-  async function handleSearch(query: string) {
+  const handlerSearch = async (query: string) => {
+    setMovies([]);
+    setLoading(true);
+
     try {
-      setMovies([]);
-      setIsLoading(true);
-      setIsError(false);
+      const movies = await fetchMovies(query);
 
-      const results = await fetchMovies(query);
-
-      if (!results.length) {
+      if (movies.length < 0) {
         toast.error('No movies found for your request.');
+        return;
       }
 
-      setMovies(results);
+      setMovies(movies);
     } catch {
-      setIsError(true);
+      setError(true);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>
-      <SearchBar onSubmit={handleSearch} />
+      <SearchBar onSubmit={handlerSearch} />
       <Toaster />
-
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
-      {!isLoading && !isError && <MovieGrid movies={movies} onSelect={setSelectedMovie} />}
-
+      {!isLoading && !isError && <MovieGrid onSelect={setSelectedMovie} movies={movies} />}
       {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
     </>
   );
 }
+
+export default App;
